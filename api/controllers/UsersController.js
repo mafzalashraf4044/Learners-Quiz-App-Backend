@@ -93,5 +93,84 @@ module.exports = {
         });
     },
 
+	createUser: (req, res) => {
+        /**
+         * Params:
+         * - firstName (req)
+         * - lastName (req)
+         * - email (req)
+         * - password (req)
+         * - username
+         * - groups
+        */
+
+        sails.log('UsersController::createUser called');
+
+        let params = req.allParams();
+        
+        /**
+         * Email field is unique for each user, user will be crated
+         * only if no existing user has the same email address
+         * 
+         */
+        Users.findOne({email: params.email}).exec((err, userFound) => {
+            if(err){
+                sails.log('ERROR: UsersController::createUser Users.findOne', err);
+                return res.serverError();
+            }
+            //If user with the given address already exists, return without creating the user
+            else if(userFound){
+                return res.responses(400, 'UserAlreadyExists')  
+            }
+            else {
+                //Required Feilds Validation
+                if(!params.firstName){
+                    return res.responses(400, 'UserFirstNameReq');
+                }else if(!params.lastName) {
+                    return res.responses(400, 'UserLastNameReq');
+                }else if(!params.email) {
+                    return res.responses(400, 'UserEmailNameReq');
+                }else if(!params.password){
+                    return res.responses(400, 'UserPasswordNameReq');
+                }
+
+                //Feilds Pattern Validation
+                if(!/^[a-zA-Z][a-zA-Z]+[a-zA-Z]$/.test(params.firstName)){
+                    return res.responses(400, 'UserFirstNameInvalid');
+                }else if(!/^[a-zA-Z][a-zA-Z]+[a-zA-Z]$/.test(params.lastName)){
+                    return res.responses(400, 'UserLastNameInvalid');
+                }else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(params.email)){
+                    return res.responses(400, 'UserEmailInvalid');
+                }else if(params.username && !/^[a-zA-Z0-9][a-zA-Z0-9]+[a-zA-Z0-9]$/.test(params.username)){
+                    return res.responses(400, 'UserUsernameInvalid');
+                }
+
+                //Creating user in DB
+                Users.create(params).exec((err, user)=> {
+                    if(err){
+                        sails.log('ERROR: UsersController::createUser Users.create', err);
+                        return res.serverError();
+                    }
+
+                    Users.find({
+                      id: user.id
+                    }, {
+                      fields: ['firstName', 'lastName', 'email', 'username', 'active']
+                    }).populate('groups', {
+                      select: ['id', 'title']
+                    }).exec((err, _user) => {
+                      if (err) {
+                        sails.log('ERROR: UsersController::createUser Users.find', err);
+                        return res.serverError();
+                      }
+
+                      return res.responses(200, 'CreateUserSuccess', _.head(_user));
+                    });
+
+                });
+            }
+        });
+    },
+
 };
 
