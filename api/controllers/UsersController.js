@@ -172,5 +172,97 @@ module.exports = {
         });
     },
 
+	editUser: (req, res) => {
+        /**
+         * Params:
+         * - id (req)
+         * - firstName (req)
+         * - lastName (req)
+         * - email (req)
+         * - password (req)
+         * - username
+         * - groups
+        */
+
+        sails.log('UsersController::editUser called');
+
+        let params = req.allParams();
+
+        sails.log("params", params)
+        
+        Users.findOne({id: {'!': params.id}, email: params.email}).exec((err, userFound) => {
+            if(err){
+                sails.log('ERROR: UsersController::editUser Users.findOne', err);
+                return res.serverError();
+            }
+            else if(userFound){
+                return res.responses(400, 'UserAlreadyExists')  
+            }
+            else {
+                //Required Feilds Validation
+                if(!params.firstName){
+                    return res.responses(400, 'UserFirstNameReq');
+                }else if(!params.lastName) {
+                    return res.responses(400, 'UserLastNameReq');
+                }else if(!params.email) {
+                    return res.responses(400, 'UserEmailNameReq');
+                }
+
+                //Feilds Pattern Validation
+                if(!/^[a-zA-Z][a-zA-Z]+[a-zA-Z]$/.test(params.firstName)){
+                    return res.responses(400, 'UserFirstNameInvalid');
+                }else if(!/^[a-zA-Z][a-zA-Z]+[a-zA-Z]$/.test(params.lastName)){
+                    return res.responses(400, 'UserLastNameInvalid');
+                }else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(params.email)){
+                    return res.responses(400, 'UserEmailInvalid');
+                }else if(params.username && !/^[a-zA-Z0-9][a-zA-Z0-9]+[a-zA-Z0-9]$/.test(params.username)){
+                    return res.responses(400, 'UserUsernameInvalid');
+                }
+
+                Users.findOne({id: params.id}).populate('groups').exec((err, user)=> {
+                    if(err){
+                        sails.log('ERROR: UsersController::editUser Users.findOne', err);
+                        return res.serverError();
+                    }
+
+                    user.firstName = params.firstName,
+                    user.lastName = params.lastName,
+                    user.email = params.email,
+                    params.username ? user.username = params.username : null;
+
+                    if(params.groups){
+                        sails.log("remove",_.difference(_.pluck(user.groups, 'id'), params.groups))
+                        user.groups.remove(_.difference(_.pluck(user.groups, 'id'), params.groups));
+                        user.groups.add(params.groups);
+                    }
+
+
+                    user.save((err) => {
+                        if(err){
+                            sails.log('ERROR: UsersController::editUser user.save', err);
+                            return res.serverError();
+                        }
+
+                        Users.find({
+                          id: user.id
+                        }, {
+                          fields: ['firstName', 'lastName', 'email', 'username', 'active']
+                        }).populate('groups', {
+                          select: ['id', 'title']
+                        }).exec((err, _user) => {
+                          if (err) {
+                            sails.log('ERROR: UsersController::editUser Users.find', err);
+                            return res.serverError();
+                          }
+
+                          return res.responses(200, 'UserEditedSuccessfully', _.head(_user));
+                        });
+
+                    });
+
+                });
+            }
+        });
+    },
 };
 
