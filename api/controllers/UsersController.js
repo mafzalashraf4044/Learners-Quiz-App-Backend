@@ -132,6 +132,8 @@ module.exports = {
                     return res.responses(400, 'UserEmailNameReq');
                 }else if(!params.password){
                     return res.responses(400, 'UserPasswordNameReq');
+                }else if(!params.groups || (_.isArray(params.groups) && params.groups.length == 0)){
+                    return res.responses(400, 'UserGroupsReq');
                 }
 
                 //Feilds Pattern Validation
@@ -235,6 +237,8 @@ module.exports = {
                     return res.responses(400, 'UserLastNameReq');
                 }else if(!params.email) {
                     return res.responses(400, 'UserEmailNameReq');
+                }else if(!params.groups || (_.isArray(params.groups) && params.groups.length == 0)){
+                    return res.responses(400, 'UserGroupsReq');
                 }
 
                 //Feilds Pattern Validation
@@ -290,6 +294,31 @@ module.exports = {
                     });
 
                 });
+            }
+        });
+    },
+
+    dltUser: (req, res) => {
+        /**
+         * params:
+         * - id (req)
+         */
+
+        sails.log('UsersController::dltUser called');
+
+        params = req.allParams();
+
+        Users.update({id: params.ids}, {isArchived: true}).exec((err, user) => {
+            if(err){
+                sails.log('ERROR: UsersController::dltUser Users.update', err);
+                return res.serverError();
+            }else {
+                if(err){
+                    sails.log('ERROR: UsersController::dltUser user.save', err);
+                    return res.serverError();
+                }
+
+                return res.responses(200, 'UserDltedSuccessfully') 
             }
         });
     },

@@ -9,11 +9,13 @@ module.exports = function responses(status, type, data = null) {
         'FetchUsersSuccess': {status: status, users: data, msg: 'Users fetched successfully.', code: 'USRSUC001'},
         'CreateUserSuccess': {status: status, user: data, msg: 'User created successfully.', code: 'USRSUC002'},
         'UserEditedSuccessfully': {status: status, user: data, msg: 'User edited successfully.', code: 'USRSUC003'},
+        'UserDltedSuccessfully': {status: status, msg: 'User deleted successfully.', code: 'USRSUC004'},
 
         'UserFirstNameReq': {status: status, msg: 'User\'s first name is required.', code: 'USRERR001'},
         'UserLastNameReq': {status: status, msg: 'User\'s last name is required.', code: 'USRERR002'},
         'UserEmailReq': {status: status, msg: 'User\'s email is required.', code: 'USRERR003'},
         'UserPasswordReq': {status: status, msg: 'User\'s password is required.', code: 'USRERR004'},
+        'UserGroupsReq': {status: status, msg: 'User\'s groups are required.', code: 'USRERR005'},
 
         'UserFirstNameInvalid': {status: status, msg: 'First name must be atleast 3 characters long, with no special characters or white spaces.', code: 'USRERR005'},
         'UserLastNameInvalid': {status: status, msg: 'Last name must be atleast 3 characters long, with no special characters or white spaces.', code: 'USRERR006'},
@@ -21,10 +23,11 @@ module.exports = function responses(status, type, data = null) {
         'UserUsernameInvalid': {status: status, msg: 'Username provided is invalid.', code: 'USRERR008'},
 
 
+        'UserAlreadyExists': {status: status, msg: 'A user with this email address already exists.', code: 'USRERR009'},
+        'UserNotFound': {status: status, msg: 'Specified user does not exist.', code: 'USRERR010'},
 
         'FetchGroupsSuccess': {status: status, groups: data, msg: 'Groups fetched successfully.', code: 'GRPSUC001'},
 
-        'UserAlreadyExists': {status: status, msg: 'A user with this email address already exists.', code: 'USRERR001'},
 
         'FetchGroupsSpecificFieldsSuccess': {status: status, groups: data, msg: 'Groups specific fields fetched successfully.', code: 'GRPSUC001'},
         
