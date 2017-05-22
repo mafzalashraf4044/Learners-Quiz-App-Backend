@@ -50,4 +50,5 @@ module.exports.routes = {
   'POST /users/create': 'UsersController.createUser',
   'POST /users/edit/:id': 'UsersController.editUser',
 
+  'GET /groups/all': 'GroupsController.getGroups',
 };
