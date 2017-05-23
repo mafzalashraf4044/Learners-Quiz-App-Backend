@@ -49,6 +49,7 @@ module.exports.routes = {
   'GET /users/all': 'UsersController.getUsers',
   'POST /users/create': 'UsersController.createUser',
   'POST /users/edit/:id': 'UsersController.editUser',
+  'POST /users/joingroups/:id': 'UsersController.joinGroups',
 
   'GET /groups/all': 'GroupsController.getGroups',
 };

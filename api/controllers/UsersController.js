@@ -172,6 +172,35 @@ module.exports = {
         });
     },
 
+    joinGroups: (req, res) => {
+        sails.log("UsersController::joinGroups called");
+
+        let params = req.allParams();
+
+        Users.findOne({id: params.id}).exec((err, userFound) => {
+            sails.log("userfound", userFound);
+            userFound.groups.add(params.groups);
+            
+            userFound.save((err) => {
+                if(err){
+                    sails.log('err', err);
+
+                    return res.badRequest({
+                        status: 400,
+                        errCode: 'ERRUSR008',
+                        msg: 'Something went wrong.'
+                    });                    
+                }else {
+                    return res.ok({
+                        status: 200,
+                        msg: 'Groups joined successfully.',
+                        data: userFound,
+                    });               
+                }
+            });
+        });        
+    },
+
 	editUser: (req, res) => {
         /**
          * Params:
