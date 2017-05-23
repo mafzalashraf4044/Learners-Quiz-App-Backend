@@ -10,6 +10,7 @@ module.exports = function responses(status, type, data = null) {
         'CreateUserSuccess': {status: status, user: data, msg: 'User created successfully.', code: 'USRSUC002'},
         'UserEditedSuccessfully': {status: status, user: data, msg: 'User edited successfully.', code: 'USRSUC003'},
         'UserDltedSuccessfully': {status: status, msg: 'User deleted successfully.', code: 'USRSUC004'},
+        'UserStatusUpdated': {status: status, updatedStatus: data, msg: 'User status updated successfully.', code: 'USRSUC005'},
 
         'UserFirstNameReq': {status: status, msg: 'User\'s first name is required.', code: 'USRERR001'},
         'UserLastNameReq': {status: status, msg: 'User\'s last name is required.', code: 'USRERR002'},

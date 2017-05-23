@@ -322,5 +322,44 @@ module.exports = {
             }
         });
     },
+
+    toggleUserStatus: (req, res) => {
+        /**
+         * params:
+         * - id (req)
+         * - status
+         */
+
+        sails.log('UsersController::toggleUserStatus called');
+
+        params = req.allParams();
+
+        Users.findOne({id: params.id}).exec((err, user) => {
+            if(err){
+                sails.log('ERROR: UsersController::toggleUserStatus Users.findOne', err);
+                return res.serverError();
+            }
+            else if(!user){
+                return res.responses(400, 'UserNotFound')  
+            }else {
+
+                //If params has active fields use it, else toggle the status
+                if(params.active != undefined && typeof params.active == 'boolean'){
+                    user.active = params.active;
+                }else{
+                    user.active = user.active ? false: true;
+                }
+                
+                user.save((err) => {
+                    if(err){
+                        sails.log('ERROR: UsersController::toggleUserStatus user.save', err);
+                        return res.serverError();
+                    }
+
+                    return res.responses(200, 'UserStatusUpdated', user.active) 
+                })
+            }
+        })
+    },
 };
 

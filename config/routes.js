@@ -51,6 +51,8 @@ module.exports.routes = {
   'POST /users/edit/:id': 'UsersController.editUser',
   'POST /users/delete-selected-users': 'UsersController.dltUser',
 
+  'POST /users/activate-deactivate-user/:id': 'UsersController.toggleUserStatus',
+
   'POST /users/joingroups/:id': 'UsersController.joinGroups',
 
   'GET /groups/all': 'GroupsController.getGroups',
